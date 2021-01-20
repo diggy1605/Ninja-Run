@@ -8,6 +8,7 @@ var gameState = "start"
 var playButton
 var gameOverButton
 var restartButton
+var score = 0
 
 function preload() {
   bgImage = loadImage("Cut Images/Backgrounds/Grasses.jpg");
@@ -51,7 +52,7 @@ function setup() {
   Ninja.addAnimation("stance",stance);
   Ninja.addAnimation("jumping",jumping);
   Ninja.addAnimation("falling",falling);
-  Ninja.debug = true;
+  //Ninja.debug = true;
   
 }
 function draw() {
@@ -66,6 +67,8 @@ function draw() {
 
    bg.velocityX = 0;
 
+   score = 0
+
    if(mousePressedOver(play)){
 
     gameState = "play";
@@ -74,9 +77,6 @@ function draw() {
 
   }
 
-
-
-
   }  
   else if(gameState === "play") {
     
@@ -84,6 +84,7 @@ function draw() {
     gameOver.visible = false;
     restart.visible = false;
       
+    score = score + Math.round(getFrameRate()/60)
     
     if(bg.x < 0 ){
       bg.x = bg.width/2
@@ -91,7 +92,7 @@ function draw() {
   
     if(keyWentDown ("SPACE")){
   
-      Ninja.velocityY = -15;
+      Ninja.velocityY = -17;
       Ninja.changeAnimation("jumping");
     }
     if(keyWentUp ("SPACE")){
@@ -123,12 +124,27 @@ function draw() {
     restart.visible = true;
 
     obstaclesGroup.setLifetimeEach(-1);
-    cloudsGroup.setLifetimeEach(-1);    
-  
+    cloudsGroup.setLifetimeEach(-1);   
+    
+       if(mousePressedOver(restart)){
+
+    gameState = "start";
+   
+    Ninja.changeAnimation("stance");
+   
+    play.visible = true;
+
+    cloudsGroup.destroyEach();
+    obstaclesGroup.destroyEach();
+ }
 }
   
   Ninja.collide(ground);
   drawSprites();
+
+  textSize(20);
+  fill("Red");
+  text("Score :"+ score,1200,50);
 }
 function spawnClouds() {
 
@@ -151,7 +167,7 @@ function spawnClouds() {
   }
 
   cloud.scale = 0.5;
-  cloud.velocityX = -5;
+  cloud.velocityX = -7;
   
   cloud.lifetime = 460;
     
@@ -159,7 +175,8 @@ function spawnClouds() {
 
   cloud.depth = Ninja.depth;
   Ninja.depth = Ninja.depth + 1;
-
+  cloud.depth = restart.depth;
+  restart.depth = restart.depth + 1;
 }
 }
 
@@ -181,11 +198,11 @@ function spawnObstacles() {
   }
 
   obstacle.scale = 0.4;
-  obstacle.velocityX = -5;
+  obstacle.velocityX = -8;
   
   obstacle.lifetime = 460;
   
-  obstacle.debug = true;
+//  obstacle.debug = true;
 
   obstaclesGroup.add(obstacle);
 }
